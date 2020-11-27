@@ -106,24 +106,26 @@ const WildDice = (() => { // eslint-disable-line no-unused-vars
 
                 let rDice = _.pluck( (msg.inlinerolls && msg.inlinerolls[0].results.rolls[0].results) || [], 'v');
                 let pips = ((msg.inlinerolls && msg.inlinerolls[0].results.total-_.reduce(rDice,function(m,r){return m+r;},0)) || 0);
-                let result = pips / 3;
+                let pipsAsDice = pips / 3;
         
-                if (result !== 0) {
-                    if (Number.isInteger(result)) {
-                        rDice.push(Math.floor(Math.random() * 6) + 1);
+                if (pipsAsDice !== 0) {
+                    let upperBound = 0;
+                    
+                    if (Number.isInteger(pipsAsDice)) {
+                        upperBound = pipsAsDice;
                         pips = 0;
                     } else {
-                        let upperBound = Math.trunc(result);
-                        let remainder = result % 1;
-                        
-                        for (let i = 0; i < upperBound; i++) {
-                            rDice.push(Math.floor(Math.random() * 6) + 1);
-                        }
-                        
+                        let remainder = pipsAsDice % 1;
+                        upperBound = Math.trunc(pipsAsDice);
+
                         if (remainder > 0.0) {
                             pips = remainder > 0.6 ? 2 : 1;                           
                         }
-                    }                    
+                    }    
+                    
+                    for (let i = 0; i < upperBound; i++) {
+                        rDice.push(randomInteger(6));
+                    }
                 }
                 
                 let wildDie = rDice.pop();
